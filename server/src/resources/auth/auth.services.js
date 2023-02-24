@@ -4,10 +4,11 @@ const encryptPassword = require("../../utils/security/encryptPassword.js");
 const comparePassword = require("../../utils/security/comparePassword.js");
 const createUserPayload = require("../../utils/jwt/createUserPayload.js");
 const attachCookies = require("../../utils/jwt/attachCookies.js");
+const deleteCookies = require("../../utils/jwt/deleteCookies.js");
 
 const register = async (req, res) => {
   const { username, email, password } = req.body;
-  const isUserExistWithEmail = await User.findOne({ email });
+  const { data: isUserExistWithEmail } = await User.findOne({ email });
   if (isUserExistWithEmail)
     throw new Errors.BadRequest("another user exist with this email");
   const encryptedPassword = await encryptPassword(password);
@@ -16,23 +17,26 @@ const register = async (req, res) => {
     email,
     password: encryptedPassword,
   };
-  const user = await User.create(payload);
-  res.json(user);
+  const { data: user } = await User.create(payload);
+  res.status(201).json({ message: "Registration successfull", data: user });
 };
 
 const login = async (req, res) => {
   const { email, password } = req.body;
-  const user = await User.findOne({ email });
-  if (!user) throw new Errors.NotFound("user does not exist");
+  console.log("hii");
+  console.log(email, password);
+  const { data: user } = await User.findOne({ email });
+  if (!user) throw new Errors.NotFound("invalid email");
   const isMatch = await comparePassword(password, user.password);
   if (!isMatch) throw new Errors.BadRequest("invalid password");
   const userPayload = createUserPayload(user);
   attachCookies(res, userPayload);
-  res.json({ message: "Login was successfull", user: userPayload });
+  res.json({ message: "Login successfull", user: userPayload });
 };
 
 const logout = async (req, res) => {
-  res.json({ message: "logout" });
+  deleteCookies(res, ...Object.keys(req.signedCookies));
+  res.json({ message: `${req.user.username} logged out` });
 };
 
 module.exports = {

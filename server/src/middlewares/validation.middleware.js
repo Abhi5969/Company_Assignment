@@ -1,4 +1,5 @@
 const validateBody = (vSchema) => async (req, res, next) => {
+  // console.log(req.body);
     const validBody = await vSchema.parseAsync(req.body);
     req.body = validBody;
     next();
