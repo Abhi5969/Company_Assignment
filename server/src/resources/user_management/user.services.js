@@ -27,7 +27,7 @@ const updateUser = async (req, res) => {
   const { password, ...payload } = req.body;
   const { id } = req.params;
  
-    const { data: user } = await User.findOneAndUpdate({ id }, payload);
+    const { data: user } = await User.findOneAndUpdate({ id, isDeleted: false }, payload);
     return res.json({
       user,
     });
