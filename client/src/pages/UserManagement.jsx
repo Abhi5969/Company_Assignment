@@ -4,7 +4,7 @@ import UserData from "../components/userData"
 import Delete from "../components/delete"
 const UserManagement = () =>{
   const [userData, setuserData] = useState([])
-  const [isDisplayDeletePopUp, setisDisplayDeletePopUp] = useState(false)
+  
   const getUserData = async () =>{
 try{
   const {data} = await axios.get('/api/v1/users')
@@ -22,9 +22,7 @@ try{
  const newUserData = userData.filter(user => user.id !== id )
  setuserData(newUserData)
  }
- const enableDeletePopup = (id) =>{
-  setisDisplayDeletePopUp(true)
- }
+ 
   return <div className="relative z-0">
     <h1 className="font-bold text-2xl text-center p-4">User Details</h1>
   <div class="relative overflow-x-auto">
@@ -50,12 +48,12 @@ try{
         </thead>
         <tbody>
         {
-    userData.map((user)=> <UserData key={user.id} onDelete={enableDeletePopup} {...user}/> )
+    userData.map((user)=> <UserData key={user.id} onDelete={handleDeleteUser} {...user}/> )
    }
         </tbody>
         </table>
 </div>
-{isDisplayDeletePopUp && <Delete/>}
+
   </div>
 }
 

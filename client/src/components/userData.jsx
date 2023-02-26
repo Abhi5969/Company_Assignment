@@ -1,9 +1,12 @@
 import React from 'react'
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import Delete from './delete';
+
 function UserData(props) {
     const [isEditMode, setisEditMode] = useState(false)
     const [userName, setuserName] = useState(props.username)
+    const [isDisplayDeletePopUp, setisDisplayDeletePopUp] = useState(false)
    function toggleEditmode(){
     setisEditMode(isEditMode => !isEditMode)
    }
@@ -20,16 +23,16 @@ function UserData(props) {
     console.log(err);
    }
    }
-    const handleDelete = async () =>{
-try {
-    //  await axios.delete(`api/v1/users/${props.id}`) 
-    props.onDelete(props.id)
-} catch (error) {
-    console.log(err);
-} 
-    }
-   
+const handleDelete = async() =>{
+  await axios.delete(`api/v1/users/${props.id}`) 
+  props.onDelete(props.id)
+  setisDisplayDeletePopUp(false)
+}
+const enableDeletePopup = () =>{
+  setisDisplayDeletePopUp(true)
+ }
   return (
+   
     <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                 <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                { props.id.slice(0,6)}
@@ -50,9 +53,11 @@ try {
                     { isEditMode && <button className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow" onClick={handleSubmit}>Save</button>}
                 </td>
                 <td class="px-6 py-4">
-                <button className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow" onClick={handleDelete}>Delete</button>
+                <button className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow" onClick={enableDeletePopup}>Delete</button>
                 </td>
+                {isDisplayDeletePopUp && <Delete onDelete={handleDelete}/>}
             </tr>
+          
   )
 }
 

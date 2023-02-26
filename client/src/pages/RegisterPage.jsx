@@ -19,7 +19,7 @@ const RegisterPg = () => {
         // to do save user data to app context
         
         alert(data.message)
-        navigate('/user-management')
+        navigate('/login')
       }catch(err){
         // console.log(err);
         alert(err.response.data.message + err.response.status +" Error")
